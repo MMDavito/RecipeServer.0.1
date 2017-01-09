@@ -7,6 +7,7 @@ package nu.te4.objects;
 
 import java.util.ArrayList;
 import java.util.List;
+import nu.te4.support.ConnectionFactory;
 
 /**
  *
@@ -44,31 +45,13 @@ public class ReIngredient {
             return false;
         }
     }
-public static int getReID(String ings){
-int temp;
-List<ReIngredient> list = new ArrayList<ReIngredient>();
+    
+    //RETURNS ALL INGREDIENT INFORMATION ASOSIATEAD WITH RECIPE
+public static ArrayList<ReIngredient> getRecIngr(String recipeID){
+List<ReIngredient> list = new ArrayList<>();
 
- while (ings.contains(" ")) {
-            ReIngredient re = new ReIngredient();
-            System.out.println(ings);
-            temp = ings.indexOf(" ");
-            if (ings.charAt(0) != '-') {
-                re.setIngName(ings.substring(0, temp));
-            } else {
-                re.setIngName(ings.substring(1, temp));
-            }
-            ings = ings.substring(temp + 1);
-            re.setIngAmount(ings.substring(0, ings.indexOf("-")));
-            ings = ings.substring(ings.indexOf("-"));
-            list.add(re);
-            System.out.println("List_ID::  " + list);
-        }
- 
- for (ReIngredient rI : list) {
-            String rITemp = rI.getIngName();
-            
- 
- 
- return -1;
+
+return (ArrayList<ReIngredient>) list;
 }
 }
+

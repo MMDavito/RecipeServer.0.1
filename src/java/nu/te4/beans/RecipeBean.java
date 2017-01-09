@@ -9,7 +9,6 @@ import nu.te4.support.ConnectionFactory;
 import nu.te4.objects.ReIngredient;
 import nu.te4.objects.Time;
 import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import java.io.StringReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -59,12 +58,13 @@ public class RecipeBean {
             re.setIngAmount(ings.substring(0, ings.indexOf("-")));
             ings = ings.substring(ings.indexOf("-"));
             list.add(re);
-            System.out.println(list);
+            System.out.println("List_ID::  " + list);
         }
+
         int test = 0;
+        int test2 = 0;
 
         //save ingredients, than add recipe, save recipe id then add rec-ing
-        int test2 = 0;
         for (ReIngredient rI : list) {
             String rITemp = rI.getIngName();
             System.out.println(test + rITemp + ":" + rI.getIngAmount());
@@ -75,42 +75,49 @@ public class RecipeBean {
                 System.out.println("database test " + test2);
                 test2++;
                 Connection connection = ConnectionFactory.make("testserver");
-                PreparedStatement stmt = connection.prepareStatement(
-                        "INSERT INTO ingredients VALUES (NULL, ?, NULL)");
-                stmt.setString(1, rI.getIngName());
-                System.out.println(stmt);
-                try {
-                    stmt.execute();
+                PreparedStatement stmt;
+                stmt = connection.prepareStatement("SELECT id FROM ingredients "
+                        + "WHERE name = ?");
+                stmt.setString(1, rITemp);
+                System.out.println("So far so good " + stmt);
+                rs = stmt.executeQuery();
+                System.out.println("KOMMER LÄNGRE ÄN MAN KAN TRO");
+                if (rs.next() == false) {
+                    System.out.println("ING DIDNT EXSIST");
                     stmt.close();
-                    stmt = connection.prepareStatement("SELECT LAST_INSERT_ID() AS id;");
-                    rs = stmt.executeQuery();
-                    rI.setIngName(rs.getString("id"));
-                    System.out.println("RS id " + rI.getIngName());
-                    connection.close();
-                    
-                } catch (MySQLIntegrityConstraintViolationException e) {
-                    System.out.println("ING ALREADY EXISTS " + e.getMessage());
                     try {
-                        stmt.close();
-                        stmt = connection.prepareStatement("SELECT id FROM ingredients "
-                                + "WHERE name = ?");
+                        stmt = connection.prepareStatement("INSERT INTO ingredients VALUES (NULL, ?, NULL)");
                         stmt.setString(1, rITemp);
-                        System.out.println("So far so good "+stmt);
+                        System.out.println(stmt);
+
+                        stmt.execute();
+                        stmt.close();
+                        stmt = connection.prepareStatement("SELECT LAST_INSERT_ID() AS id;");
                         rs = stmt.executeQuery();
-                        
-                        rI.setIngName(rs.getString("id"));
-                        System.out.println("Id from database "+rI.getIngName());
+                        while (rs.next()) {
+                            rI.setIngName(rs.getString("id"));
+                            System.out.println("RS id " + rI.getIngName());
+                        }
+
                     } catch (Exception f) {
-                        System.out.println("Errorrrrs " + f.getMessage());
+                        System.out.println("ERROR f: " + f);
                     }
 
+                } else {
+                    while (rs.next()) {
+                        rI.setIngName(rs.getString("id"));
+                        System.out.println("Id from database " + rI.getIngName());
+                        rs.close();
+                        stmt.close();
+                    }
                 }
-
-                //stmt.setString(2, rI.getIngName());
+                connection.close();
             } catch (Exception e) {
-                System.out.println("errorrr: " + e);
-                return false;
+                System.out.println("Errorrrrs e: " + e);
             }
+        }
+        for(ReIngredient ri : list){
+            System.out.println(ri.getIngName()+" : "+ri.getIngAmount());
         }
         return true;
     }

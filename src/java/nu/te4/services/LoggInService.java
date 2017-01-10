@@ -21,9 +21,9 @@ public class LoggInService {
 
     /**
      *
-     * @param httpHeaders Base64 username:password 
-     * @return http-status 401 if not authoricatead
-     * http-status 200: ok if Authoricatead.
+     * @param httpHeaders Base64 username:password
+     * @return http-status 401 if not authoricatead http-status 200: ok if
+     * Authoricatead.
      */
     @POST
     @Path("login")
@@ -32,5 +32,18 @@ public class LoggInService {
             return Response.status(401).build();
         }
         return Response.ok().build();
+    }
+
+    //409 is for duplicate
+    @POST
+    @Path("register")
+    public Response regUser(@Context HttpHeaders httpHeaders) {
+        if (User.regUser(httpHeaders) == 1) {
+            return Response.status(Response.Status.CREATED).build();
+
+        } else if (User.regUser(httpHeaders) == -1) {
+            return Response.status(409).build();
+        }
+        return Response.status(Response.Status.BAD_REQUEST).build();
     }
 }

@@ -10,8 +10,10 @@ import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationExceptio
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import javax.json.JsonArray;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import nu.te4.objects.Time;
@@ -52,8 +54,8 @@ public class User {
     /**
      *
      * @param httpHeaders Base64 username:password
-     * @return 1 if success, -1 if username exsists in database, 
-     * -2 is generall errormessage
+     * @return 1 if success, -1 if username exsists in database, -2 is generall
+     * errormessage
      */
     public static int regUser(HttpHeaders httpHeaders) {
         try {
@@ -75,11 +77,13 @@ public class User {
         } catch (Exception e) {
             System.out.println("ERROR " + e.getMessage());
         }
+        System.out.println("returns -2");
         return -2;
     }
 
     /**
      * creates user in database.
+     *
      * @param username username
      * @param password password
      * @return true if createad, else throws exception.
@@ -110,18 +114,64 @@ public class User {
     public static boolean checkUser(String username, String password) {
         try {
             Connection con = ConnectionFactory.make("testserver");
-            PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE username = ?;");
+            PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE name = ?;");
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
 
             rs.next();
             String hashedPW = rs.getString("password");
             con.close();
+            System.out.println(hashedPW);
 
             return BCrypt.checkpw(password, hashedPW);
         } catch (Exception e) {
             System.err.println("ERROR " + e.getMessage());
         }
         return false;
+    }
+
+    public static boolean addAuthor(int recId, HttpHeaders httpHeaders) {
+        try {            
+            List<String> authHeader = httpHeaders.getRequestHeader(HttpHeaders.AUTHORIZATION);
+            String header = authHeader.get(0);
+            header = header.substring(header.indexOf(" ") + 1);
+            byte[] decoded = Base64.getDecoder().decode(header);
+            String userPass = new String(decoded);
+            System.out.println(userPass);
+            //plocka ut anv och lösenord
+            String username = userPass.substring(0, userPass.indexOf(":"));
+            int userId = getUserId(username);
+
+            Connection con = ConnectionFactory.make("testserver");
+            String query = "INSERT INTO authors VALUES(NULL,?,?);";
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setInt(1, recId);
+            stmt.setInt(2, userId);
+            stmt.execute();
+            con.close();
+            return true;
+        } catch (Exception e) {
+            System.out.println("errorr "+e);
+        }
+        return false;
+    }
+    public static JsonArray getAuthors(){
+    
+        return null;
+    }
+
+    public static int getUserId(String username) {
+        try {
+            Connection con = ConnectionFactory.make("testserver");
+            PreparedStatement stmt = con.prepareStatement("SELECT id FROM users WHERE name = ?;");
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+            int id = rs.getInt("id");
+            return id;
+        } catch (Exception e) {
+            System.out.println("Errorr " + e);
+        }
+        return -1;
     }
 }

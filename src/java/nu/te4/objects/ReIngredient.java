@@ -5,6 +5,8 @@
  */
 package nu.te4.objects;
 
+import com.mysql.jdbc.Connection;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import nu.te4.support.ConnectionFactory;
@@ -15,17 +17,17 @@ import nu.te4.support.ConnectionFactory;
  */
 public class ReIngredient {
 
-    private String ingName;
+    private int ingId;
     private String ingAmount;
 
-    public String getIngName() {
-        return ingName;
+    public int getIngId() {
+        return ingId;
     }
 
-    public boolean setIngName(String ingName) {
-        System.out.println(ingName);
-        if (ingName.length() <= 50) {
-            this.ingName = ingName;
+    public boolean setIngId(int ingId) {
+        System.out.println(ingId);
+        this.ingId = ingId;
+        if (ingId > 0) {
             return true;
         } else {
             return false;
@@ -38,20 +40,37 @@ public class ReIngredient {
 
     public boolean setIngAmount(String ingAmount) {
         System.out.println(ingAmount);
-        if (ingAmount.length() <= 50) {
+        if (ingAmount.length() <= 6) {
             this.ingAmount = ingAmount;
             return true;
         } else {
             return false;
         }
     }
-    
+
     //RETURNS ALL INGREDIENT INFORMATION ASOSIATEAD WITH RECIPE
-public static ArrayList<ReIngredient> getRecIngr(String recipeID){
-List<ReIngredient> list = new ArrayList<>();
+    public static ArrayList<ReIngredient> getRecIngr(String recipeID) {
+        List<ReIngredient> list = new ArrayList<>();
 
+        return (ArrayList<ReIngredient>) list;
+    }
 
-return (ArrayList<ReIngredient>) list;
+    public static boolean addRecIngrs(int recId, ArrayList<ReIngredient> ings) {
+        try {
+            Connection conn = ConnectionFactory.make("testserver");
+            String query = "INSERT INTO `recipe_ing` VALUES(NULL,?,?,?);";
+            for (ReIngredient ing : ings) {
+                PreparedStatement stmt = conn.prepareStatement(query);
+                stmt.setInt(1, recId);
+                stmt.setInt(2, ing.ingId);
+                stmt.setString(3, ing.ingAmount);
+                stmt.execute();
+                stmt.close();
+            }
+            return true;
+        } catch (Exception e) {
+            System.out.println("error "+e);
+        }
+        return false;
+    }
 }
-}
-

@@ -38,7 +38,7 @@ public class RecipeService {
         if (!User.authoricate(httpHeaders)) {
             return Response.status(401).build();
         }
-        if (!recipeBean.addRecipe(body)) {
+        if (!recipeBean.addRecipe(body, httpHeaders)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         return Response.status(Response.Status.CREATED).build();

@@ -19,7 +19,10 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.ws.rs.core.HttpHeaders;
 import nu.te4.objects.Ingredient;
+import nu.te4.objects.Recipe;
+import nu.te4.support.User;
 
 /**
  *
@@ -30,24 +33,12 @@ import nu.te4.objects.Ingredient;
 @Stateless
 public class RecipeBean {
 
-    public boolean addRecipe(String body) {
-        ArrayList<ReIngredient> list = new ArrayList<ReIngredient>();
-        //ReIngredient re = new ReIngredient();
-
-        System.out.println(body);
-
-        JsonReader jsonReader = Json.createReader(new StringReader(body));
-        JsonObject data = jsonReader.readObject();
-        String name = data.getString("name");
-        String cat = data.getString("cat");
-        String ings = data.getString("ing");
-        String inst = data.getString("inst");
-        String time = Time.dTi();
-        System.out.println("Kommer till efter läsning");
-        System.out.println(ings);
-        return false;
+    public boolean addRecipe(String body, HttpHeaders httpHeaders) {
+        int recId =Recipe.addRecipe(body);
+        return User.addAuthor(recId, httpHeaders);
     }
-    public JsonArray getIngs(){
+
+    public JsonArray getIngs() {
         return Ingredient.getAllIngs();
     }
 }

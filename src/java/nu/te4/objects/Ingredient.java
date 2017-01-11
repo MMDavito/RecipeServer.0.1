@@ -67,7 +67,7 @@ public class Ingredient {
      * @param ing ingredient object wished to add
      * @return null if fail, else the newly createad object with its new id.
      */
-    public static Ingredient addIngredient(Ingredient ing) {
+    public static int addIngredient(Ingredient ing) {
         int ret;
 
         try {
@@ -83,13 +83,13 @@ public class Ingredient {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 ret = rs.getInt("id");
-                ing.setId(ret);
-                return ing;
+                
+                return ret;
             }
         } catch (Exception e) {
             System.out.println("Ingredient " + e);
         }
-        return null;
+        return -1;
     }
 
     /**

@@ -54,7 +54,6 @@ public class RecipeService {
 
     @DELETE
     @Path("recipe/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
     public Response deleteRecipe(@PathParam("id") int id) {
         return Response.status(Response.Status.BAD_REQUEST).build();
 
@@ -68,6 +67,18 @@ public class RecipeService {
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
+    @POST
+    @Path("ingredient")
+    public Response addIng(String body, @Context HttpHeaders httpHeaders){
+    if (!User.authoricate(httpHeaders)) {
+            return Response.status(401).build();
+        }
+    if(!recipeBean.addIng(body)){
+    return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+    return Response.status(Response.Status.CREATED).build();
+    
+    }
     @GET
     @Path("ingredients")
     @Produces(MediaType.APPLICATION_JSON)

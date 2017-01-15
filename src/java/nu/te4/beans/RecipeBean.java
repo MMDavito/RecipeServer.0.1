@@ -34,11 +34,27 @@ import nu.te4.support.User;
 public class RecipeBean {
 
     public boolean addRecipe(String body, HttpHeaders httpHeaders) {
-        int recId =Recipe.addRecipe(body);
+        int recId = Recipe.addRecipe(body);
         return User.addAuthor(recId, httpHeaders);
     }
 
     public JsonArray getIngs() {
         return Ingredient.getAllIngs();
+    }
+
+    public boolean addIng(String body) {
+        JsonReader jsonReader = Json.createReader(new StringReader(body));
+        JsonObject data = jsonReader.readObject();
+        String name = data.getString("name");
+        String info = data.getString("information");
+        Ingredient ing = new Ingredient();
+        ing.setName(name);
+        ing.setInfo(info);
+        int boo;
+        boo = Ingredient.addIngredient(ing);
+        if (boo > 0) {
+            return true;
+        }
+        return false;
     }
 }

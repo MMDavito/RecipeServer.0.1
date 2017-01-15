@@ -87,7 +87,7 @@ public class Ingredient {
                 return ret;
             }
         } catch (Exception e) {
-            System.out.println("Ingredient " + e);
+            System.err.println("Ingredient " + e);
         }
         return -1;
     }
@@ -132,6 +132,7 @@ public class Ingredient {
                 return true;
 
             } catch (Exception e) {
+                System.err.println("Ingredient: "+e);
             }
         }
         return false;
@@ -164,7 +165,7 @@ public class Ingredient {
             return jsonArrayBuilder.build();
 
         } catch (Exception ex) {
-            System.out.println("err: " + ex);
+            System.err.println("Ingredient: "+ex);
         }
 
         return null;

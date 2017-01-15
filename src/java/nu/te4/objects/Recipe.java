@@ -79,6 +79,7 @@ public class Recipe {
             rs.next();
             int id = rs.getInt("id");
             stmt.close();
+            conn.close();
 
             if (ReIngredient.addRecIngrs(id, reIngs)) {
                 return id;

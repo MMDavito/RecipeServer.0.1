@@ -6,6 +6,7 @@
 package nu.te4.objects;
 
 import com.mysql.jdbc.Connection;
+import java.io.StringReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import nu.te4.support.ConnectionFactory;
 
 /**
@@ -170,5 +173,23 @@ public class Ingredient {
         }
 
         return null;
+    }
+    public static boolean addIng(String body) {
+        JsonReader jsonReader = Json.createReader(new StringReader(body));
+        JsonObject data = jsonReader.readObject();
+        String name = data.getString("name");
+        String info = data.getString("information");
+        Ingredient ing = new Ingredient();
+        boolean boo1 = ing.setName(name);
+        boolean boo2 = ing.setInfo(info);
+        if (boo1 == false || boo2 == false) {
+            return false;
+        }
+        int boo;
+        boo = Ingredient.addIngredient(ing);
+        if (boo > 0) {
+            return true;
+        }
+        return false;
     }
 }

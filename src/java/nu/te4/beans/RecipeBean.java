@@ -46,22 +46,7 @@ public class RecipeBean {
     }
 
     public boolean addIng(String body) {
-        JsonReader jsonReader = Json.createReader(new StringReader(body));
-        JsonObject data = jsonReader.readObject();
-        String name = data.getString("name");
-        String info = data.getString("information");
-        Ingredient ing = new Ingredient();
-        boolean boo1 = ing.setName(name);
-        boolean boo2 = ing.setInfo(info);
-        if (boo1 == false || boo2 == false) {
-            return false;
-        }
-        int boo;
-        boo = Ingredient.addIngredient(ing);
-        if (boo > 0) {
-            return true;
-        }
-        return false;
+        return Ingredient.addIng(body);
     }
 
     public JsonArray getRecipes() {

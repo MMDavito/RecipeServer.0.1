@@ -68,7 +68,7 @@ public class Ingredient {
      * @return null if fail, else the newly createad object with its new id.
      */
     public static int addIngredient(Ingredient ing) {
-        int ret;
+        int ret = -2;
 
         try {
             Connection conn = ConnectionFactory.make("testserver");
@@ -83,9 +83,10 @@ public class Ingredient {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 ret = rs.getInt("id");
-                
-                return ret;
             }
+            conn.close();
+            return ret;
+
         } catch (Exception e) {
             System.err.println("Ingredient " + e);
         }
@@ -132,7 +133,7 @@ public class Ingredient {
                 return true;
 
             } catch (Exception e) {
-                System.err.println("Ingredient: "+e);
+                System.err.println("Ingredient: " + e);
             }
         }
         return false;
@@ -165,7 +166,7 @@ public class Ingredient {
             return jsonArrayBuilder.build();
 
         } catch (Exception ex) {
-            System.err.println("Ingredient: "+ex);
+            System.err.println("Ingredient: " + ex);
         }
 
         return null;

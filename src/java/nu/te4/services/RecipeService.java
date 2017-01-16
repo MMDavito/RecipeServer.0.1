@@ -62,9 +62,12 @@ public class RecipeService {
     @GET
     @Path("recipes")
     @Produces(MediaType.APPLICATION_JSON)
-
     public Response getRecipes() {
-        return Response.status(Response.Status.BAD_REQUEST).build();
+        JsonArray data = recipeBean.getRecipes();
+        if(data == null){
+        return Response.serverError().build();
+        }
+        return Response.ok(data).build();
     }
 
     @POST

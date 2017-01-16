@@ -6,13 +6,13 @@
 package nu.te4.objects;
 
 import com.mysql.jdbc.Connection;
-import com.sun.org.apache.bcel.internal.generic.Select;
 import java.io.StringReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import nu.te4.support.ConnectionFactory;
@@ -56,7 +56,10 @@ public class Recipe {
             String amount = ings.substring(0, slash);
             ings = ings.substring(slash);
             reIng.setIngId(ingId);
-            reIng.setIngAmount(amount);
+            boolean boo = reIng.setIngAmount(amount);
+            if (!boo) {
+                return -3;
+            }
             reIngs.add(reIng);
 
         }
@@ -88,6 +91,49 @@ public class Recipe {
             System.out.println("error " + e);
         }
         return -1;
+    }
+
+    public static JsonArray getRecipes() {
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        try {
+            System.out.println("Trying to get recipes");
+            Connection conn = ConnectionFactory.make("testserver");
+            String query = "SELECT * FROM `recipe_list` ORDER BY category,name";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String cat = rs.getString("category");
+                String name = rs.getString("name");
+                String timeRevised = rs.getString("time_revised");
+                String info = rs.getString("basic_info");
+                String instruction = rs.getString("instruction");
+                String imgSrc = rs.getString("image");
+                if (info == null) {
+                    info = "";
+                }
+                if (imgSrc == null) {
+                    imgSrc = "";
+                }
+                if (cat == null) {
+                    cat = "Category undefined";
+                }
+                System.out.println("Trying to build recipeJsonArray");
+                jsonArrayBuilder.add(Json.createObjectBuilder()
+                        .add("id", id)
+                        .add("cat", cat)
+                        .add("name", name)
+                        .add("info", info)
+                        .add("instruction", instruction)
+                        .add("img_src", imgSrc)
+                        .add("time_revised", timeRevised).build());
+            }            
+            conn.close();
+            return jsonArrayBuilder.build();
+        } catch (Exception e) {
+            System.err.println("Recipe " + e);
+        }
+        return null;
     }
 
 }

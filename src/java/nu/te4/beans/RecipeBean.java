@@ -35,6 +35,9 @@ public class RecipeBean {
 
     public boolean addRecipe(String body, HttpHeaders httpHeaders) {
         int recId = Recipe.addRecipe(body);
+        if (recId < 0) {
+            return false;
+        }
         return User.addAuthor(recId, httpHeaders);
     }
 
@@ -48,13 +51,20 @@ public class RecipeBean {
         String name = data.getString("name");
         String info = data.getString("information");
         Ingredient ing = new Ingredient();
-        ing.setName(name);
-        ing.setInfo(info);
+        boolean boo1 = ing.setName(name);
+        boolean boo2 = ing.setInfo(info);
+        if (boo1 == false || boo2 == false) {
+            return false;
+        }
         int boo;
         boo = Ingredient.addIngredient(ing);
         if (boo > 0) {
             return true;
         }
         return false;
+    }
+
+    public JsonArray getRecipes() {
+        return Recipe.getRecipes();
     }
 }

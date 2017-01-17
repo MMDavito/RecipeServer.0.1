@@ -136,4 +136,29 @@ public class Recipe {
         return null;
     }
 
+    public static JsonArray getIngsForRecipe(int id) {
+        
+            JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        try {
+            Connection conn = ConnectionFactory.make("testserver");
+            String query = "SELECT * FROM rec_ing WHERE id_rec = ?;";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                int idIng = rs.getInt("id");
+            String ingName = rs.getString("ing_name");
+            String ingAmount = rs.getString("ing_amount");
+            jsonArrayBuilder.add(Json.createObjectBuilder()
+                    .add("id", id)
+                    .add("id_ing", idIng)
+                    .add("name_ing", ingName)
+                    .add("amount_ing", ingAmount).build());
+            return jsonArrayBuilder.build();
+            }
+        } catch (Exception e) {
+        }
+        return null;
+          }
+
 }

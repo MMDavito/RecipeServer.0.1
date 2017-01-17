@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import javax.json.JsonArray;
+import javax.json.JsonObject;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import nu.te4.objects.Time;
@@ -30,7 +31,7 @@ public class User {
      * @param httpHeaders Base64 username:password
      * @return true if authoricatead, else false
      */
-    public static boolean authoricate(HttpHeaders httpHeaders) {
+    public static int authoricate(HttpHeaders httpHeaders) {
         try {
             List<String> authHeader = httpHeaders.getRequestHeader(HttpHeaders.AUTHORIZATION);
             String header = authHeader.get(0);
@@ -42,13 +43,12 @@ public class User {
             String username = userPass.substring(0, userPass.indexOf(":"));
             String password = userPass.substring(userPass.indexOf(":") + 1);
 
-            if (checkUser(username, password)) {
-                return true;
-            }
+            return checkUser(username, password);
+
         } catch (Exception e) {
             System.out.println("Fel utavhelvete " + e.getMessage());
         }
-        return false;
+        return -2;
     }
 
     /**
@@ -111,7 +111,7 @@ public class User {
      * @param password password
      * @return true if authoricatead, else false.
      */
-    public static boolean checkUser(String username, String password) {
+    public static int checkUser(String username, String password) {
         try {
             Connection con = ConnectionFactory.make("testserver");
             PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE name = ?;");
@@ -120,18 +120,27 @@ public class User {
 
             rs.next();
             String hashedPW = rs.getString("password");
+            Integer userAccess = rs.getInt("authorization_level");
             con.close();
             System.out.println(hashedPW);
 
-            return BCrypt.checkpw(password, hashedPW);
+            if (BCrypt.checkpw(password, hashedPW)) {
+                System.out.println("user auth " + userAccess);
+                if (userAccess == 0) {
+                    return 1;
+                }
+                if (userAccess == 1) {
+                    return 2;
+                }
+            }
         } catch (Exception e) {
             System.err.println("ERROR " + e.getMessage());
         }
-        return false;
+        return -1;
     }
 
     public static boolean addAuthor(int recId, HttpHeaders httpHeaders) {
-        try {            
+        try {
             List<String> authHeader = httpHeaders.getRequestHeader(HttpHeaders.AUTHORIZATION);
             String header = authHeader.get(0);
             header = header.substring(header.indexOf(" ") + 1);
@@ -151,12 +160,13 @@ public class User {
             con.close();
             return true;
         } catch (Exception e) {
-            System.out.println("errorr "+e);
+            System.out.println("errorr " + e);
         }
         return false;
     }
-    public static JsonArray getAuthors(){
-    
+
+    public static JsonArray getAuthors() {
+
         return null;
     }
 

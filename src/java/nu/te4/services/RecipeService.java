@@ -7,6 +7,7 @@ package nu.te4.services;
 
 import javax.ejb.EJB;
 import javax.json.JsonArray;
+import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -35,7 +36,7 @@ public class RecipeService {
     @Path("recipe")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addRecipe(String body, @Context HttpHeaders httpHeaders) {
-        if (!User.authoricate(httpHeaders)) {
+        if (User.authoricate(httpHeaders)>0) {
             return Response.status(401).build();
         }
         if (!recipeBean.addRecipe(body, httpHeaders)) {
@@ -48,8 +49,21 @@ public class RecipeService {
     @Path("recipe/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRecipe(@PathParam("id") int id) {
-        return Response.status(Response.Status.BAD_REQUEST).build();
-
+        JsonObject data = recipeBean.getRecipe();
+        if(data == null){
+        return Response.serverError().build();
+        }
+        return Response.ok(data).build();    
+    }
+    @GET
+    @Path("recipe_ings/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getRecipeIngs(@PathParam("id") int id) {
+        JsonArray data = recipeBean.getRecipeIngs(id);
+        if(data == null){
+        return Response.serverError().build();
+        }
+        return Response.ok(data).build();    
     }
 
     @DELETE
@@ -73,7 +87,7 @@ public class RecipeService {
     @POST
     @Path("ingredient")
     public Response addIng(String body, @Context HttpHeaders httpHeaders){
-    if (!User.authoricate(httpHeaders)) {
+    if (User.authoricate(httpHeaders)>0) {
             return Response.status(401).build();
         }
     if(!recipeBean.addIng(body)){

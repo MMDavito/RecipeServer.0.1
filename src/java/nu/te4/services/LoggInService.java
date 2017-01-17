@@ -5,10 +5,15 @@
  */
 package nu.te4.services;
 
+import javax.json.Json;
+import javax.json.JsonBuilderFactory;
+import javax.json.JsonObject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import nu.te4.support.User;
 
@@ -27,11 +32,20 @@ public class LoggInService {
      */
     @POST
     @Path("login")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response checkLogin(@Context HttpHeaders httpHeaders) {
-        if (!User.authoricate(httpHeaders)) {
+        int login = User.authoricate(httpHeaders);
+
+        System.out.println("integer" + login);
+        if (login < 0) {
             return Response.status(401).build();
         }
-        return Response.ok().build();
+        JsonBuilderFactory factory = Json.createBuilderFactory(null);
+        JsonObject value = factory.createObjectBuilder()
+                .add("access_level", login)
+                .build();
+        System.out.println("JSONen "+value);
+        return Response.ok(value).build();
     }
 
     //409 is for duplicate

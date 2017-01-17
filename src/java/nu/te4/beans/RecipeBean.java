@@ -5,20 +5,9 @@
  */
 package nu.te4.beans;
 
-import nu.te4.support.ConnectionFactory;
-import nu.te4.objects.ReIngredient;
-import nu.te4.objects.Time;
-import com.mysql.jdbc.Connection;
-import java.io.StringReader;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
 import javax.ejb.Stateless;
-import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.ws.rs.core.HttpHeaders;
 import nu.te4.objects.Ingredient;
 import nu.te4.objects.Recipe;
@@ -51,5 +40,13 @@ public class RecipeBean {
 
     public JsonArray getRecipes() {
         return Recipe.getRecipes();
+    }
+
+    public JsonObject getRecipe() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public JsonArray getRecipeIngs(int id) {
+        return Recipe.getIngsForRecipe(id);
     }
 }

@@ -42,8 +42,8 @@ public class RecipeBean {
         return Recipe.getRecipes();
     }
 
-    public JsonObject getRecipe() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public JsonArray getRecipe(int id) {
+        return Recipe.getIngsForRecipe(id);
     }
 
     public JsonArray getRecipeIngs(int id) {

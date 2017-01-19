@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import nu.te4.support.ConnectionFactory;
@@ -127,7 +128,7 @@ public class Recipe {
                         .add("instruction", instruction)
                         .add("img_src", imgSrc)
                         .add("time_revised", timeRevised).build());
-            }            
+            }
             conn.close();
             return jsonArrayBuilder.build();
         } catch (Exception e) {
@@ -136,29 +137,81 @@ public class Recipe {
         return null;
     }
 
+    public static JsonObject getRecipe(int id) {
+        try {
+            System.out.println("Trying to get recipes");
+            Connection conn = ConnectionFactory.make("testserver");
+            String query = "SELECT * FROM `recipe_list` WHERE id = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+            id = rs.getInt("id");
+            String cat = rs.getString("category");
+            String name = rs.getString("name");
+            String timeRevised = rs.getString("time_revised");
+            String info = rs.getString("basic_info");
+            String instruction = rs.getString("instruction");
+            String imgSrc = rs.getString("image");
+            if (info == null) {
+                info = "";
+            }
+            if (imgSrc == null) {
+                imgSrc = "";
+            }
+            if (cat == null) {
+                cat = "Category undefined";
+            }
+            System.out.println("Trying to build recipeJsonArray");
+            JsonBuilderFactory factory = Json.createBuilderFactory(null);
+            JsonObject value = factory.createObjectBuilder()
+                    .add("id", id)
+                    .add("cat", cat)
+                    .add("name", name)
+                    .add("info", info)
+                    .add("instruction", instruction)
+                    .add("img_src", imgSrc)
+                    .add("time_revised", timeRevised).build();
+
+            conn.close();
+            return value;
+        } catch (Exception e) {
+            System.err.println("Recipe " + e);
+        }
+        return null;
+    }
+
     public static JsonArray getIngsForRecipe(int id) {
-        
-            JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        JsonObject recipe = getRecipe(id);
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        JsonArrayBuilder jsonArrayBuilder2 = Json.createArrayBuilder();
         try {
             Connection conn = ConnectionFactory.make("testserver");
             String query = "SELECT * FROM rec_ing WHERE id_rec = ?;";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
-            while(rs.next()){
+
+            while (rs.next()) {
                 int idIng = rs.getInt("id");
-            String ingName = rs.getString("ing_name");
-            String ingAmount = rs.getString("ing_amount");
-            jsonArrayBuilder.add(Json.createObjectBuilder()
-                    .add("id", id)
-                    .add("id_ing", idIng)
-                    .add("name_ing", ingName)
-                    .add("amount_ing", ingAmount).build());
-            return jsonArrayBuilder.build();
+                String ingName = rs.getString("ing_name");
+                String ingAmount = rs.getString("ing_amount");
+                jsonArrayBuilder.add(Json.createObjectBuilder()
+                        .add("rec_id", id)
+                        .add("id_ing", idIng)
+                        .add("name_ing", ingName)
+                        .add("amount_ing", ingAmount).build());
             }
+            JsonArray ingredients = jsonArrayBuilder.build();
+            jsonArrayBuilder2.add(Json.createObjectBuilder()
+                    .add("recipe", recipe)
+                    .add("ingredients", ingredients).build());
+
+            conn.close();
+            return jsonArrayBuilder2.build();
         } catch (Exception e) {
         }
         return null;
-          }
+    }
 
 }

@@ -49,7 +49,8 @@ public class RecipeService {
     @Path("recipe/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRecipe(@PathParam("id") int id) {
-        JsonObject data = recipeBean.getRecipe();
+        System.out.println("trying to get recipe of id "+id);
+        JsonArray data = recipeBean.getRecipe(id);
         if(data == null){
         return Response.serverError().build();
         }

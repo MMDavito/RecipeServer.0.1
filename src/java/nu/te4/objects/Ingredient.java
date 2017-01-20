@@ -174,7 +174,7 @@ public class Ingredient {
 
         return null;
     }
-    public static boolean addIng(String body) {
+    public static int addIng(String body) {
         JsonReader jsonReader = Json.createReader(new StringReader(body));
         JsonObject data = jsonReader.readObject();
         String name = data.getString("name");
@@ -183,13 +183,13 @@ public class Ingredient {
         boolean boo1 = ing.setName(name);
         boolean boo2 = ing.setInfo(info);
         if (boo1 == false || boo2 == false) {
-            return false;
+            return -3;
         }
         int boo;
         boo = Ingredient.addIngredient(ing);
         if (boo > 0) {
-            return true;
+            return 1;
         }
-        return false;
+        return -1;
     }
 }

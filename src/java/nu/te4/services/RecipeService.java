@@ -36,7 +36,7 @@ public class RecipeService {
     @Path("recipe")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addRecipe(String body, @Context HttpHeaders httpHeaders) {
-        if (User.authoricate(httpHeaders)>0) {
+        if (User.authoricate(httpHeaders) > 0) {
             return Response.status(401).build();
         }
         if (!recipeBean.addRecipe(body, httpHeaders)) {
@@ -49,22 +49,23 @@ public class RecipeService {
     @Path("recipe/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRecipe(@PathParam("id") int id) {
-        System.out.println("trying to get recipe of id "+id);
+        System.out.println("trying to get recipe of id " + id);
         JsonArray data = recipeBean.getRecipe(id);
-        if(data == null){
-        return Response.serverError().build();
+        if (data == null) {
+            return Response.serverError().build();
         }
-        return Response.ok(data).build();    
+        return Response.ok(data).build();
     }
+
     @GET
     @Path("recipe_ings/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRecipeIngs(@PathParam("id") int id) {
         JsonArray data = recipeBean.getRecipeIngs(id);
-        if(data == null){
-        return Response.serverError().build();
+        if (data == null) {
+            return Response.serverError().build();
         }
-        return Response.ok(data).build();    
+        return Response.ok(data).build();
     }
 
     @DELETE
@@ -79,31 +80,36 @@ public class RecipeService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRecipes() {
         JsonArray data = recipeBean.getRecipes();
-        if(data == null){
-        return Response.serverError().build();
+        if (data == null) {
+            return Response.serverError().build();
         }
         return Response.ok(data).build();
     }
 
     @POST
     @Path("ingredient")
-    public Response addIng(String body, @Context HttpHeaders httpHeaders){
-    if (User.authoricate(httpHeaders)>0) {
+    public Response addIng(String body, @Context HttpHeaders httpHeaders) {
+        System.out.println(body);
+        if (User.authoricate(httpHeaders) < 0) {
             return Response.status(401).build();
         }
-    if(!recipeBean.addIng(body)){
-    return Response.status(Response.Status.BAD_REQUEST).build();
-    }
-    return Response.status(Response.Status.CREATED).build();
-    
-    }
+            int check = recipeBean.addIng(body);
+            if (check == -3) {
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            if (check == -1) {
+                return Response.status(409).build();
+            }
+            return Response.status(Response.Status.CREATED).build();
+        }    
+
     @GET
     @Path("ingredients")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getIngs() {
         JsonArray data = recipeBean.getIngs();
-        if(data == null){
-        return Response.serverError().build();
+        if (data == null) {
+            return Response.serverError().build();
         }
         return Response.ok(data).build();
     }

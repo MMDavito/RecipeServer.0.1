@@ -34,7 +34,7 @@ public class RecipeBean {
         return Ingredient.getAllIngs();
     }
 
-    public boolean addIng(String body) {
+    public int addIng(String body) {
         return Ingredient.addIng(body);
     }
 

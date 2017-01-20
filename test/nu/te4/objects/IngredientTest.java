@@ -6,6 +6,7 @@
 package nu.te4.objects;
 
 import javax.json.JsonArray;
+import org.apache.taglibs.standard.lang.jstl.GreaterThanOperator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -85,9 +86,9 @@ public class IngredientTest {
     @Test
     public void testSetInfo() {
         System.out.println("setInfo");
-        String info = "";
+        String info = null;
         Ingredient instance = new Ingredient();
-        boolean expResult = false;
+        boolean expResult = true;
         boolean result = instance.setInfo(info);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
@@ -100,10 +101,12 @@ public class IngredientTest {
     @Test
     public void testAddIngredient() {
         System.out.println("addIngredient");
-        Ingredient ing = null;
+        Ingredient ing = new Ingredient();
+        ing.setName("Falskarn");
+        ing.setInfo(null);
         int expResult = 0;
         int result = Ingredient.addIngredient(ing);
-        assertEquals(expResult, result);
+        assertTrue(result>expResult);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

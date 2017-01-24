@@ -9,6 +9,7 @@ import javax.ejb.Stateless;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.ws.rs.core.HttpHeaders;
+import nu.te4.objects.Category;
 import nu.te4.objects.Ingredient;
 import nu.te4.objects.Recipe;
 import nu.te4.support.User;
@@ -48,5 +49,9 @@ public class RecipeBean {
 
     public JsonArray getRecipeIngs(int id) {
         return Recipe.getIngsForRecipe(id);
+    }
+
+    public JsonArray getCats() {
+        return Category.getAllCats();
     }
 }

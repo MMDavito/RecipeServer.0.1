@@ -113,4 +113,14 @@ public class RecipeService {
         }
         return Response.ok(data).build();
     }
+    @GET
+    @Path("categories")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCats() {
+        JsonArray data = recipeBean.getCats();
+        if (data == null) {
+            return Response.serverError().build();
+        }
+        return Response.ok(data).build();
+    }
 }

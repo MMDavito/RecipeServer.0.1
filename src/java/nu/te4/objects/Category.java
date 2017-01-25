@@ -5,12 +5,15 @@
  */
 package nu.te4.objects;
 
+import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import nu.te4.support.ConnectionFactory;
 
 /**
@@ -40,5 +43,28 @@ public class Category {
             System.err.println("cats: " + e);
         }
         return null;
+    }
+
+    public static int addCat(String body) {
+
+        JsonReader jsonReader = Json.createReader(new StringReader(body));
+        JsonObject data = jsonReader.readObject();
+        String name = data.getString("name");
+        if (name.length() > 30) {
+            return -1;
+        }
+        try {
+            Connection conn = ConnectionFactory.make("testserver");
+            String query = "INSERT INTO `recipe_cat` VALUES(NULL,?);";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, name);
+            stmt.execute();
+            stmt.close();
+            conn.close();
+            return 1;
+        } catch (Exception e) {
+            System.err.println("Category " + e);
+        }
+        return -2;
     }
 }

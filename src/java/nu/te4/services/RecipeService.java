@@ -7,7 +7,6 @@ package nu.te4.services;
 
 import javax.ejb.EJB;
 import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -123,4 +122,22 @@ public class RecipeService {
         }
         return Response.ok(data).build();
     }
+    @POST
+    @Path("category")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response addCat(String body, @Context HttpHeaders httpHeaders) {
+        System.out.println(body);
+        if (User.authoricate(httpHeaders) < 0) {
+            return Response.status(401).build();
+        }
+            int check = recipeBean.addCat(body);
+            if (check == -2) {
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            if (check == -1) {
+                return Response.serverError().build();
+            }
+            //Should I use if(==1) ? OR should i keept this to not miss general errors?
+            return Response.status(Response.Status.CREATED).build();
+        }
 }

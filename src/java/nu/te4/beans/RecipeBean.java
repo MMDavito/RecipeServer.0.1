@@ -54,4 +54,8 @@ public class RecipeBean {
     public JsonArray getCats() {
         return Category.getAllCats();
     }
+
+    public int addCat(String body) {
+    return Category.addCat(body);
+    }
 }

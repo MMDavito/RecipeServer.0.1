@@ -31,12 +31,17 @@ public class Recipe {
 
         JsonReader jsonReader = Json.createReader(new StringReader(body));
         JsonObject data = jsonReader.readObject();
+        System.out.println(data);
         String name = data.getString("name");
+        System.out.println("name "+name);
         int cat = data.getInt("cat");
+        System.out.println("cat");
         String inf = data.getString("basic-inf");
         String ings = data.getString("ing");
+        System.err.println("basic-inf");
         String inst = data.getString("inst");
         String img = data.getString("img-link");
+        System.out.println("img-link");
         String time = Time.dTi();
         ArrayList<ReIngredient> reIngs = new ArrayList<>();
 

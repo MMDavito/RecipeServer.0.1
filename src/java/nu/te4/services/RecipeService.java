@@ -35,7 +35,7 @@ public class RecipeService {
     @Path("recipe")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addRecipe(String body, @Context HttpHeaders httpHeaders) {
-        if (User.authoricate(httpHeaders) > 0) {
+        if (User.authoricate(httpHeaders) < 0) {
             return Response.status(401).build();
         }
         if (!recipeBean.addRecipe(body, httpHeaders)) {
